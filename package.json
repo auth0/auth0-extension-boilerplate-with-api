@@ -1,0 +1,19 @@
+{
+  "name": "auth0-extension",
+  "version": "0.0.1",
+  "description": "My extension for ..",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "auth0",
+    "extension"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.3",
+    "webtask-tools": "^1.1.0"
+  }
+}
