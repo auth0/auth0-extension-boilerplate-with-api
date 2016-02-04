@@ -15,7 +15,11 @@
   "license": "MIT",
   "dependencies": {
     "auth0-oauth2-express": "0.0.3",
+    "body-parser": "^1.14.2",
     "express": "^4.13.3",
+    "express-jwt": "^3.3.0",
+    "express-unless": "^0.3.0",
+    "jsonwebtoken": "^5.5.4",
     "webtask-tools": "^1.1.0"
   }
 }
