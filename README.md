@@ -41,15 +41,27 @@ A useful extension would typically use the Auth0 API. We created a module that a
 
 Auth0 Extensions would be typically be client side but if you want to have server side logic you can create endpoints on `index.js` and we would provide by default JWT authentication so all the calls run under the user context.
 
-  ```js
-  app.get('/secured', function (req, res) {
-    if (!req.user) {
-      return res.sendStatus(401);
-    }
+### Configuring JWT validation
 
-    res.status(200).send({message: 'Secured world'});
-  });
-  ```
+```js
+api.use(jwtExpress({
+  secret: function(req, payload, done) {
+    done(null, req.webtaskContext.data.TOKEN_SECRET);
+  }
+}));
+```
+
+### Adding a secured endpoint
+
+```js
+api.get('/secured', function (req, res) {
+  if (!req.user) {
+    return res.sendStatus(401);
+  }
+
+  res.status(200).send({user: req.user});
+});
+```
 ## What is Auth0?
 
 Auth0 helps you to:
