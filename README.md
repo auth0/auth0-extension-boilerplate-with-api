@@ -41,6 +41,24 @@ A useful extension would typically use the Auth0 API. We created a module that a
 
 Auth0 Extensions would be typically be client side but if you want to have server side logic you can create endpoints on `index.js` and we would provide by default JWT authentication so all the calls run under the user context.
 
+### Configuring JWT generation
+
+```js
+app.use(auth0({
+  scopes: 'read:connections',
+  apiToken: {
+    payload: function (req, res, next) {
+      // Add extra info to the API token
+      req.userInfo.MoreInfo = "More Info";
+      next();
+    },
+    secret: function (req) {
+      return req.webtaskContext.data.EXTENSION_SECRET;
+    }
+  }
+}));
+```
+
 ### Configuring JWT validation
 
 ```js
@@ -62,6 +80,27 @@ api.get('/secured', function (req, res) {
   res.status(200).send({user: req.user});
 });
 ```
+
+## Running locally
+
+To run the sample extension locally:
+
+```bash
+$ npm install
+$ npm start
+```
+
+## Deploying to Webtask.io
+
+If you want to host your extension, you can easily  do it by using [Webtask.io](https://webtask.io).
+
+* Install [wt-cli](https://github.com/auth0/wt-cli) - `npm install -g wt-cli`
+* Install [webtask-bundle](https://github.com/auth0/webtask-bundle) - `npm install -g webtask-bundle`
+* Run `npm run build`
+* Run `wt create ./build/bundle.js --name my-extension --no-parse --no-merge --secret EXTENSION_SECRET={YOUR-SECRET}`
+
+Note: For more information about how to setup Webtask, click [here](https://webtask.io/docs/101).
+
 ## What is Auth0?
 
 Auth0 helps you to:

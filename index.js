@@ -14,7 +14,7 @@ if ((process.env.NODE_ENV || 'development') === 'development') {
   app.use(function (req, res, next) {
     req.webtaskContext = {
       data: {
-        TOKEN_SECRET: token // This will be automatically provisioned once the extensions is installed
+        EXTENSION_SECRET: token // This will be automatically provisioned once the extensions is installed
       }
     };
 
@@ -24,7 +24,7 @@ if ((process.env.NODE_ENV || 'development') === 'development') {
   api.use(function (req, res, next) {
     req.webtaskContext = {
       data: {
-        TOKEN_SECRET: token // This will be automatically provisioned once the extensions is installed
+        EXTENSION_SECRET: token // This will be automatically provisioned once the extensions is installed
       }
     };
 
@@ -35,10 +35,15 @@ if ((process.env.NODE_ENV || 'development') === 'development') {
 
 app.use(auth0({
   scopes: 'read:connections',
-  apiTokenPayload: function (req, res, next) {
-    // Add extra info to the API token
-    req.userInfo.MoreInfo = "More Info";
-    next();
+  apiToken: {
+    payload: function (req, res, next) {
+      // Add extra info to the API token
+      req.userInfo.MoreInfo = "More Info";
+      next();
+    },
+    secret: function (req) {
+      return req.webtaskContext.data.EXTENSION_SECRET;
+    }
   }
 }));
 
@@ -81,7 +86,7 @@ app.get('/', function (req, res) {
 ////////////// API //////////////
 api.use(jwtExpress({
   secret: function(req, payload, done) {
-    done(null, req.webtaskContext.data.TOKEN_SECRET);
+    done(null, req.webtaskContext.data.EXTENSION_SECRET);
   }
 }));
 
@@ -94,8 +99,4 @@ api.get('/secured', function (req, res) {
 });
 ////////////// API //////////////
 
-if ((process.env.NODE_ENV || 'development') === 'development') {
-  app.listen(3000);
-} else {
-  module.exports = Webtask.fromExpress(app);
-}
+module.exports = app;
