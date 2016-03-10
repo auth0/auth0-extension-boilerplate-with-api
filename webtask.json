@@ -8,5 +8,6 @@
   "keywords": [
     "auth0",
     "extension"
-  ]
+  ],
+  "codeUrl": "https://raw.githubusercontent.com/auth0/auth0-extension-boilerplate-with-api/master/index.js"
 }
