@@ -96,8 +96,7 @@ If you want to host your extension, you can easily  do it by using [Webtask.io](
 
 * Install [wt-cli](https://github.com/auth0/wt-cli) - `npm install -g wt-cli`
 * Install [webtask-bundle](https://github.com/auth0/webtask-bundle) - `npm install -g webtask-bundle`
-* Run `npm run build`
-* Run `wt create ./build/bundle.js --name my-extension --no-parse --no-merge --secret EXTENSION_SECRET={YOUR-SECRET}`
+* Run `npm run deploy`
 
 Note: For more information about how to setup Webtask, click [here](https://webtask.io/docs/101).
 

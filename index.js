@@ -5,33 +5,9 @@ var api        = express.Router();
 var jwtExpress = require('express-jwt');
 var auth0      = require('auth0-oauth2-express');
 
+app.use(require('./middleware/develop.js'));
+
 app.use('/api', api);
-
-////////////// DEVELOPMENT //////////////
-if ((process.env.NODE_ENV || 'development') === 'development') {
-  var token = require('crypto').randomBytes(32).toString('hex');
-
-  app.use(function (req, res, next) {
-    req.webtaskContext = {
-      data: {
-        EXTENSION_SECRET: token // This will be automatically provisioned once the extensions is installed
-      }
-    };
-
-    next();
-  });
-
-  api.use(function (req, res, next) {
-    req.webtaskContext = {
-      data: {
-        EXTENSION_SECRET: token // This will be automatically provisioned once the extensions is installed
-      }
-    };
-
-    next();
-  });
-}
-////////////// DEVELOPMENT //////////////
 
 app.use(auth0({
   scopes: 'read:connections',
