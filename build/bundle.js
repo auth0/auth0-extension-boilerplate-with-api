@@ -1,1 +1,202 @@
-module.exports=function(e){function t(n){if(o[n])return o[n].exports;var r=o[n]={exports:{},id:n,loaded:!1};return e[n].call(r.exports,r,r.exports,t),r.loaded=!0,r.exports}var o={};return t.m=e,t.c=o,t.p="/build/",t(0)}([function(e,t,o){"use strict";var n=o(1);e.exports=n.fromExpress(o(2))},function(e,t){e.exports=require("webtask-tools")},function(e,t,o){"use strict";var n=o(3),r=(o(1),n()),s=n.Router(),a=o(4),i=o(5);r.use(o(13)),r.use("/api",s),r.use(i({scopes:"read:connections",apiToken:{payload:function(e,t,o){e.userInfo.MoreInfo="More Info",o()},secret:function(e){return e.webtaskContext.data.EXTENSION_SECRET}}})),r.get("/",function(e,t){var o=["<html>","  <head>","    <title>Auth0 Extension</title>",'    <script type="text/javascript">','       if (!sessionStorage.getItem("token")) {','         window.location.href = "'+t.locals.baseUrl+'/login";',"       }","    </script>","  </head>","  <body>","    <p><strong>Token</strong></p>",'    <textarea rows="10" cols="100" id="token"></textarea>','    <script type="text/javascript">','       var token = sessionStorage.getItem("token");',"       if (token) {",'         document.getElementById("token").innerText = token;',"       }","    </script>","    <p><strong>API Token</strong></p>",'    <textarea rows="10" cols="100" id="apiToken"></textarea>','    <script type="text/javascript">','       var apiToken = sessionStorage.getItem("apiToken");',"       if (apiToken) {",'         document.getElementById("apiToken").innerText = apiToken;',"       }","    </script>","  </body>","</html>"].join("\n");t.header("Content-Type","text/html"),t.status(200).send(o)}),s.use(a({secret:function(e,t,o){o(null,e.webtaskContext.data.EXTENSION_SECRET)}})),s.get("/secured",function(e,t){return e.user?void t.status(200).send({user:e.user}):t.sendStatus(401)}),e.exports=r},function(e,t){e.exports=require("express")},function(e,t){e.exports=require("express-jwt")},function(e,t,o){function n(e){return e&&"[object Function]"==x.call(e)}function r(e,t,o){k.get("https://auth0.auth0.com/userinfo").set("Authorization","Bearer "+e.query.access_token).end(function(n,r){return n?void t.redirect(t.locals.baseUrl):(e.userInfo=r.body,void o())})}function s(e){return function(t,o,r){var s,a=e;n(e)&&(a=e(t)),s=f.sign(t.userInfo,a,{algorithm:"HS256",issuer:o.locals.baseUrl}),delete t.userinfo,t.apiToken=s,r()}}var a=o(3),i=o(6),c=a.Router(),u=o(4),l=o(7),p=o(8),d=o(9),f=o(10),k=o(11),m=864e5,x={}.toString;e.exports=function(e){var t=function(e,t,o){o()},n=[t];return e=e||{},e.clientName=e.clientName||"Auth0 Extension",e.clientId=e.clientId,e.exp=e.exp||m,e.credentialsRequired="undefined"==typeof e.credentialsRequired?!1:e.credentialsRequired,e.scopes=e.scopes+" openid profile",e.responseType=e.responseType||"token",e.apiToken&&!e.apiToken.secret&&(console.log('You are using a "development secret" for API token generation. Please setup your secret on "apiToken.secret".'),e.apiToken.secret=o(12).randomBytes(32).toString("hex")),e.apiToken&&e.apiToken.secret&&(n=[r,e.apiToken.payload||t,s(e.apiToken.secret)]),c.use(function(t,o,n){var r="https",s=l.parse(t.originalUrl).pathname.replace(t.path,"");"development"===(process.env.NODE_ENV||"development")&&(r=t.protocol,e.clientId=e.clientId||"N3PAwyqXomhNu6IWivtsa3drBfFjmWJL"),o.locals.baseUrl=l.format({protocol:r,host:t.get("host"),pathname:s}),n()}),c.use(d.urlencoded({extended:!1})),c.use(u({secret:p(),algorithms:["RS256"],credentialsRequired:e.credentialsRequired}).unless({path:["/login","/callback"]})),c.get("/login",function(t,o){var n=["https://auth0.auth0.com/i/oauth2/authorize","?client_id="+(e.clientId||o.locals.baseUrl),"&response_type="+e.responseType,"&response_mode=form_post","&scope="+encodeURIComponent(e.scopes),"&expiration="+e.exp,"&redirect_uri="+o.locals.baseUrl+"/callback"].join("");o.redirect(n)}),c.get("/logout",function(e,t){var o=["html","  head","    script.","      sessionStorage.removeItem('token')","      sessionStorage.removeItem('apiToken')","      window.location.href = 'https://auth0.auth0.com/v2/logout?returnTo=#{baseUrl}';","  body"].join("\n"),n=i.compile(o)({baseUrl:t.locals.baseUrl});t.header("Content-Type","text/html"),t.status(200).send(n)}),c.post("/callback",function(e,t){t.redirect(t.locals.baseUrl+"/callback?access_token="+e.body.access_token)}),c.get("/callback",n,function(e,t){var o=["html","  head","    script.","      sessionStorage.setItem('token', '"+e.query.access_token+"');",1===n.length?"":"      sessionStorage.setItem('apiToken', '"+e.apiToken+"');","      window.location.href = '#{baseUrl}';","  body"].join("\n"),r=i.compile(o)({baseUrl:t.locals.baseUrl});t.header("Content-Type","text/html"),t.status(200).send(r)}),c.get("/.well-known/oauth2-client-configuration",function(t,o){o.header("Content-Type","application/json"),o.status(200).send({redirect_uris:[o.locals.baseUrl+"/callback"],client_name:e.clientName})}),c}},function(e,t){e.exports=require("jade")},function(e,t){e.exports=require("url")},function(e,t){e.exports=require("auth0-api-jwt-rsa-validation")},function(e,t){e.exports=require("body-parser")},function(e,t){e.exports=require("jsonwebtoken")},function(e,t){e.exports=require("superagent")},function(e,t){e.exports=require("crypto")},function(e,t,o){"use strict";var n=o(3),r=n.Router();if("development"===(process.env.NODE_ENV||"development")){var s=o(12).randomBytes(32).toString("hex");r.use(function(e,t,o){e.webtaskContext={data:{EXTENSION_SECRET:s}},o()}),r.use("/api",function(e,t,o){e.webtaskContext={data:{EXTENSION_SECRET:s}},o()})}e.exports=r}]);
+module.exports =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "/build/";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Webtask = __webpack_require__(1);
+
+	// This is the entry-point for the Webpack build. We need to convert our module
+	// (which is a simple Express server) into a Webtask-compatible function.
+	module.exports = Webtask.fromExpress(__webpack_require__(2));
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	module.exports = require("webtask-tools");
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var express = __webpack_require__(3);
+	var Webtask = __webpack_require__(1);
+	var app = express();
+	var api = express.Router();
+	var jwtExpress = __webpack_require__(4);
+	var auth0 = __webpack_require__(5);
+	var metadata = __webpack_require__(6);
+
+	app.use(__webpack_require__(7));
+
+	app.use('/api', api);
+
+	app.use(auth0({
+	  scopes: 'read:connections',
+	  apiToken: {
+	    payload: function payload(req, res, next) {
+	      // Add extra info to the API token
+	      req.userInfo.MoreInfo = "More Info";
+	      next();
+	    },
+	    secret: function secret(req) {
+	      return req.webtaskContext.data.EXTENSION_SECRET;
+	    }
+	  }
+	}));
+
+	app.get('/', function (req, res) {
+	  var view = ['<html>', '  <head>', '    <title>Auth0 Extension</title>', '    <script type="text/javascript">', '       if (!sessionStorage.getItem("token")) {', '         window.location.href = "' + res.locals.baseUrl + '/login";', '       }', '    </script>', '  </head>', '  <body>', '    <p><strong>Token</strong></p>', '    <textarea rows="10" cols="100" id="token"></textarea>', '    <script type="text/javascript">', '       var token = sessionStorage.getItem("token");', '       if (token) {', '         document.getElementById("token").innerText = token;', '       }', '    </script>', '    <p><strong>API Token</strong></p>', '    <textarea rows="10" cols="100" id="apiToken"></textarea>', '    <script type="text/javascript">', '       var apiToken = sessionStorage.getItem("apiToken");', '       if (apiToken) {', '         document.getElementById("apiToken").innerText = apiToken;', '       }', '    </script>', '  </body>', '</html>'].join('\n');
+
+	  res.header("Content-Type", 'text/html');
+	  res.status(200).send(view);
+	});
+
+	// This endpoint would be called by webtask-gallery to dicover your metadata
+	app.get('/meta', function (req, res) {
+	  res.status(200).send(metadata);
+	});
+
+	////////////// API //////////////
+	api.use(jwtExpress({
+	  secret: function secret(req, payload, done) {
+	    done(null, req.webtaskContext.data.EXTENSION_SECRET);
+	  }
+	}));
+
+	api.get('/secured', function (req, res) {
+	  if (!req.user) {
+	    return res.sendStatus(401);
+	  }
+
+	  res.status(200).send({ user: req.user });
+	});
+	////////////// API //////////////
+
+	module.exports = app;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	module.exports = require("express");
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	module.exports = require("express-jwt");
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	module.exports = require("auth0-oauth2-express");
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"title": "Auth0 Extension Boilerplate with API",
+		"name": "auth0-extension-boilerplate-with-api",
+		"version": "1.0.0",
+		"author": "auth0",
+		"description": "This is a Hello World extension",
+		"type": "application",
+		"repository": "https://github.com/auth0/auth0-extension-boilerplate-with-api",
+		"keywords": [
+			"auth0",
+			"extension"
+		]
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var express = __webpack_require__(3);
+	var dev = express.Router();
+
+	if ((process.env.NODE_ENV || 'development') === 'development') {
+	  var token = __webpack_require__(8).randomBytes(32).toString('hex');
+
+	  dev.use(function (req, res, next) {
+	    req.webtaskContext = {
+	      data: {
+	        EXTENSION_SECRET: token // This will be automatically provisioned once the extensions is installed
+	      }
+	    };
+
+	    next();
+	  });
+
+	  dev.use('/api', function (req, res, next) {
+	    req.webtaskContext = {
+	      data: {
+	        EXTENSION_SECRET: token // This will be automatically provisioned once the extensions is installed
+	      }
+	    };
+
+	    next();
+	  });
+	}
+
+	module.exports = dev;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	module.exports = require("crypto");
+
+/***/ }
+/******/ ]);

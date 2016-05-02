@@ -4,10 +4,8 @@
   "description": "My extension for ..",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "bundle": "wt-bundle webtask.js --prod -o ./build/bundle.js",
-    "create": "wt create ./build/bundle.js --name my-extension --no-parse --no-merge --secret EXTENSION_SECRET=\"b3b6db031cdaa7a72cd56753ed9d89784c4024fdc8181ccee93faf228424bc4e\"",
-    "deploy": "npm run bundle && npm run create"
+    "start": "wt-bundle server.js -o ./build/bundle.js && node ./build/bundle.js",
+    "bundle": "wt-bundle webtask.js -o ./build/bundle.js"
   },
   "keywords": [
     "auth0",
